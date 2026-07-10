@@ -249,6 +249,12 @@ do
   -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
   -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
+  -- Command-line readline-style navigation (Ctrl-A, Meta-B/F, etc.)
+  vim.keymap.set('c', '<C-a>', '<Home>', { desc = 'Go to start of command line' })
+  vim.keymap.set('c', '<C-e>', '<End>',  { desc = 'Go to end of command line' })
+  vim.keymap.set('c', '<M-b>', '<C-Left>', { desc = 'Move back one word' })
+  vim.keymap.set('c', '<M-f>', '<C-Right>', { desc = 'Move forward one word' })
+
   -- [[ Basic Autocommands ]]
   --  See `:help lua-guide-autocommands`
 
