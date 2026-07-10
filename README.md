@@ -11,6 +11,7 @@ The `main` branch is left unmodified so it can be routinely synced from the upst
 ### Bundle these command-line dependencies
 
 - `nixpkgs#tree-sitter`
+- `nixpkgs#prettier`
 
 # kickstart.nvim
 
