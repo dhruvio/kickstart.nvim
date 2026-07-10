@@ -170,6 +170,9 @@ do
   -- Show which line your cursor is on
   vim.o.cursorline = true
 
+  -- Always use a block cursor in every mode (including insert and command mode)
+  vim.opt.guicursor = "a:block-Cursor-blinkon0"
+
   -- Minimal number of screen lines to keep above and below the cursor.
   vim.o.scrolloff = 10
 
