@@ -12,6 +12,8 @@ The `main` branch is left unmodified so it can be routinely synced from the upst
 
 ### Bundle these command-line dependencies
 
+- `nixpkgs#fd`
+- `nixpkgs#ripgrep`
 - `nixpkgs#tree-sitter`
 - `nixpkgs#prettier`
 
