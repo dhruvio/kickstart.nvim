@@ -8,6 +8,8 @@ The `main` branch is left unmodified so it can be routinely synced from the upst
 
 ## Notes for future bundling with Nix
 
+- Alias `nvim` as `vim`.
+
 ### Bundle these command-line dependencies
 
 - `nixpkgs#tree-sitter`
