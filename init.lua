@@ -92,10 +92,10 @@ do
   -- Enable faster startup by caching compiled Lua modules
   vim.loader.enable()
 
-  -- Set <space> as the leader key
+  -- Set comma as the leader key
   -- See `:help mapleader`
   --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-  vim.g.mapleader = ' '
+  vim.g.mapleader = ','
   vim.g.maplocalleader = ' '
 
   -- Set to true if you have a Nerd Font installed and selected in the terminal
@@ -381,6 +381,9 @@ do
   require('which-key').setup {
     -- Delay between pressing a key and opening which-key (milliseconds)
     delay = 0,
+    triggers = {
+      { '<leader>', mode = { 'n', 'v' } },
+    },
     icons = { mappings = vim.g.have_nerd_font },
     -- Document existing key chains
     spec = {
