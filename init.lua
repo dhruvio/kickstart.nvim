@@ -171,7 +171,7 @@ do
   vim.o.cursorline = true
 
   -- Always use a block cursor in every mode (including insert and command mode)
-  vim.opt.guicursor = "a:block-Cursor-blinkon0"
+  vim.opt.guicursor = 'a:block-Cursor-blinkon0'
 
   -- Minimal number of screen lines to keep above and below the cursor.
   vim.o.scrolloff = 10
@@ -251,7 +251,7 @@ do
 
   -- Command-line readline-style navigation (Ctrl-A, Meta-B/F, etc.)
   vim.keymap.set('c', '<C-a>', '<Home>', { desc = 'Go to start of command line' })
-  vim.keymap.set('c', '<C-e>', '<End>',  { desc = 'Go to end of command line' })
+  vim.keymap.set('c', '<C-e>', '<End>', { desc = 'Go to end of command line' })
   vim.keymap.set('c', '<M-b>', '<C-Left>', { desc = 'Move back one word' })
   vim.keymap.set('c', '<M-f>', '<C-Right>', { desc = 'Move forward one word' })
 
@@ -706,22 +706,23 @@ do
   })
 
   -- Enable the following language servers
-  --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
+  --  Feel free to add/remove any LSPs that you want here. Most will automatically be installed.
   --  See `:help lsp-config` for information about keys and how to configure
   ---@type table<string, vim.lsp.Config>
   local servers = {
-    -- clangd = {},
-    -- gopls = {},
-    -- pyright = {},
-    -- rust_analyzer = {},
-    --
-    -- Some languages (like typescript) have entire language plugins that can be useful:
-    --    https://github.com/pmizio/typescript-tools.nvim
-    --
-    -- But for many setups, the LSP (`ts_ls`) will work just fine
-    -- ts_ls = {},
-
-    stylua = {}, -- Used to format Lua code
+    bashls = {},
+    cssls = {},
+    elixirls = {},
+    elmls = {},
+    gleam = {},
+    hls = {},
+    html = {},
+    jsonls = {},
+    lemminx = {},
+    marksman = {},
+    nil_ls = {},
+    pyright = {},
+    ts_ls = {},
 
     -- Special Lua Config, as recommended by neovim help docs
     lua_ls = {
@@ -768,16 +769,18 @@ do
   -- Automatically install LSPs and related tools to stdpath for Neovim
   require('mason').setup {}
 
-  -- Ensure the servers and tools above are installed
+  -- Ensure Mason-managed servers and tools above are installed
   --
   -- To check the current status of installed tools and/or manually install
   -- other tools, you can run
   --    :Mason
   --
   -- You can press `g?` for help in this menu.
-  local ensure_installed = vim.tbl_keys(servers or {})
+  local mason_excluded_servers = { gleam = true }
+  local ensure_installed = vim.tbl_filter(function(server) return not mason_excluded_servers[server] end, vim.tbl_keys(servers or {}))
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
+    'stylua', -- Used to format Lua code
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -814,8 +817,8 @@ do
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
-      json = { "prettier" },
-      jsonc = { "prettier" },
+      json = { 'prettier' },
+      jsonc = { 'prettier' },
       -- rust = { 'rustfmt' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
