@@ -763,27 +763,11 @@ do
     gh 'neovim/nvim-lspconfig',
     gh 'mason-org/mason.nvim',
     gh 'mason-org/mason-lspconfig.nvim',
-    gh 'WhoIsSethDaniel/mason-tool-installer.nvim',
   }
 
-  -- Automatically install LSPs and related tools to stdpath for Neovim
+  -- Make Mason available for manual tool installs via `:Mason`.
+  -- Language servers and formatters are expected to be installed outside Neovim.
   require('mason').setup {}
-
-  -- Ensure Mason-managed servers and tools above are installed
-  --
-  -- To check the current status of installed tools and/or manually install
-  -- other tools, you can run
-  --    :Mason
-  --
-  -- You can press `g?` for help in this menu.
-  local mason_excluded_servers = { gleam = true }
-  local ensure_installed = vim.tbl_filter(function(server) return not mason_excluded_servers[server] end, vim.tbl_keys(servers or {}))
-  vim.list_extend(ensure_installed, {
-    -- You can add other tools here that you want Mason to install
-    'stylua', -- Used to format Lua code
-  })
-
-  require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
   for name, server in pairs(servers) do
     vim.lsp.config(name, server)
@@ -819,6 +803,7 @@ do
     formatters_by_ft = {
       json = { 'prettier' },
       jsonc = { 'prettier' },
+      lua = { 'stylua' },
       -- rust = { 'rustfmt' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
