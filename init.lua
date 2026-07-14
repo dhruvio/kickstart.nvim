@@ -266,6 +266,20 @@ do
     group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
     callback = function() vim.hl.on_yank() end,
   })
+
+  vim.api.nvim_create_autocmd('FileType', {
+    desc = 'Remove padding from # and // line comments',
+    group = vim.api.nvim_create_augroup('kickstart-commentstring-no-padding', { clear = true }),
+    callback = function()
+      local commentstring = vim.bo.commentstring
+
+      if commentstring == '# %s' then
+        vim.bo.commentstring = '#%s'
+      elseif commentstring == '// %s' then
+        vim.bo.commentstring = '//%s'
+      end
+    end,
+  })
 end
 
 -- ============================================================
