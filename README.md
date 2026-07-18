@@ -1,22 +1,3 @@
-# dhruvio's Fork
-
-This is my fork of [kickstart.nvim](https://github.com//kickstart.nvim).
-
-I make my overrides and use the `dhruv` branch for my local set-up.
-
-The `main` branch is left unmodified so it can be routinely synced from the upstream repository.
-
-## Notes for future bundling with Nix
-
-- Alias `nvim` as `vim`.
-
-### Bundle these command-line dependencies
-
-- `nixpkgs#fd`
-- `nixpkgs#ripgrep`
-- `nixpkgs#tree-sitter`
-- `nixpkgs#prettier`
-
 # kickstart.nvim
 
 ## Introduction
