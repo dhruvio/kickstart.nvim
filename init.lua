@@ -267,8 +267,10 @@ do
     callback = function() vim.hl.on_yank() end,
   })
 
+  -- Use compact prefixes without whitespace when adding #, //, and -- line comments.
+  -- Examples: `foo` becomes `#foo`; `bar` becomes `--bar`.
   vim.api.nvim_create_autocmd('FileType', {
-    desc = 'Remove padding from # and // line comments',
+    desc = 'Remove padding from #, //, and -- line comments',
     group = vim.api.nvim_create_augroup('kickstart-commentstring-no-padding', { clear = true }),
     callback = function()
       local commentstring = vim.bo.commentstring
@@ -277,9 +279,73 @@ do
         vim.bo.commentstring = '#%s'
       elseif commentstring == '// %s' then
         vim.bo.commentstring = '//%s'
+      elseif commentstring == '-- %s' then
+        vim.bo.commentstring = '--%s'
       end
     end,
   })
+
+  local line_comment_prefixes = { ['#%s'] = '#', ['//%s'] = '//', ['--%s'] = '--' }
+
+  -- Customize `gcc` to remove a line comment prefix and its following whitespace.
+  -- Examples: `# foo` becomes `foo`; `//  bar` becomes `bar`.
+  vim.keymap.set('n', 'gcc', function()
+    local comment_prefix = line_comment_prefixes[vim.bo.commentstring]
+    local line = vim.api.nvim_get_current_line()
+
+    if comment_prefix and line:match('^%s*' .. vim.pesc(comment_prefix)) then
+      vim.api.nvim_set_current_line((line:gsub('^(%s*)' .. vim.pesc(comment_prefix) .. '%s*', '%1', 1)))
+      return
+    end
+
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    require('vim._comment').toggle_lines(cursor[1], cursor[1], cursor)
+  end, { desc = 'Toggle comment line' })
+
+  -- Customize visual `gc` to remove the smallest shared post-prefix padding when uncommenting.
+  -- This is useful for preserving indenting when commenting/uncommenting blocks of code.
+  -- Examples: `#  foo\n#    bar` becomes `foo\n  bar`; `-- x\n--   y` becomes `x\n  y`.
+  vim.keymap.set('x', 'gc', function()
+    local cursor_line = vim.fn.line '.'
+    local anchor_line = vim.fn.line 'v'
+    local line_start = math.min(anchor_line, cursor_line)
+    local line_end = math.max(anchor_line, cursor_line)
+    local lines = vim.api.nvim_buf_get_lines(0, line_start - 1, line_end, false)
+    local comment_prefix = line_comment_prefixes[vim.bo.commentstring]
+    local escaped_prefix = comment_prefix and vim.pesc(comment_prefix)
+    local minimum_padding = math.huge
+    local is_commented = comment_prefix ~= nil
+
+    if is_commented then
+      for _, line in ipairs(lines) do
+        if not line:match '^%s*$' then
+          local padding = line:match('^%s*' .. escaped_prefix .. '(%s*)')
+          if padding == nil then
+            is_commented = false
+            break
+          end
+          minimum_padding = math.min(minimum_padding, #padding)
+        end
+      end
+    end
+
+    vim.cmd 'normal! \27'
+
+    if is_commented and minimum_padding < math.huge then
+      local uncommented = vim.tbl_map(function(line)
+        local indent, content = line:match('^(%s*)' .. escaped_prefix .. '(.*)$')
+        if indent == nil then return line end
+
+        local uncommented_line = indent .. content:sub(minimum_padding + 1)
+        if uncommented_line:match '^%s*$' then return '' end
+        return uncommented_line
+      end, lines)
+      vim.api.nvim_buf_set_lines(0, line_start - 1, line_end, false, uncommented)
+      return
+    end
+
+    require('vim._comment').toggle_lines(line_start, line_end, { line_start, 0 })
+  end, { desc = 'Toggle comment' })
 end
 
 -- ============================================================
@@ -549,20 +615,16 @@ do
       'package-lock.json',
       'flake.nix',
       'devbox.json',
-      'package.json'
+      'package.json',
     }) or vim.fn.getcwd()
   end
 
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
   vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-  vim.keymap.set('n', '<leader>sf', function()
-    builtin.find_files { cwd = project_root() }
-  end, { desc = '[S]earch Project [F]iles' })
+  vim.keymap.set('n', '<leader>sf', function() builtin.find_files { cwd = project_root() } end, { desc = '[S]earch Project [F]iles' })
   vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
   vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-  vim.keymap.set('n', '<leader>sg', function()
-    builtin.live_grep { cwd = project_root() }
-  end, { desc = '[S]earch Project by [G]rep' })
+  vim.keymap.set('n', '<leader>sg', function() builtin.live_grep { cwd = project_root() } end, { desc = '[S]earch Project by [G]rep' })
   vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
   vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
   vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
