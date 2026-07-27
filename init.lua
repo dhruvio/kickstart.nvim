@@ -609,6 +609,7 @@ do
   local builtin = require 'telescope.builtin'
   local function project_root()
     return vim.fs.root(0, {
+      '.ROOT',
       '.git',
       'flake.lock',
       'devbox.lock',
