@@ -408,6 +408,11 @@ do
         vim.cmd 'TSUpdate'
         return
       end
+
+      if name == 'markdown-preview.nvim' then
+        run_build(name, { 'npx', '--yes', 'yarn', 'install' }, vim.fs.joinpath(ev.data.path, 'app'))
+        return
+      end
     end,
   })
 end
@@ -469,6 +474,7 @@ do
       { '<leader>t', group = '[T]oggle' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
+      { '<leader>y', group = '[Y]ank', mode = { 'n', 'v' } },
     },
   }
 
@@ -617,6 +623,17 @@ do
       'package.json',
     }) or vim.fn.getcwd()
   end
+
+  vim.keymap.set('n', '<leader>yp', function()
+    local path = vim.api.nvim_buf_get_name(0)
+
+    if path == '' then
+      vim.notify('Current buffer has no file path', vim.log.levels.WARN)
+      return
+    end
+
+    vim.fn.setreg('+', vim.fs.relpath(project_root(), path))
+  end, { desc = '[Y]ank [P]roject-relative path' })
 
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
   vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
