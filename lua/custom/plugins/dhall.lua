@@ -1,3 +1,8 @@
+vim.lsp.config('dhall_lsp_server', {
+  on_init = function(client)
+    client.server_capabilities.semanticTokensProvider = nil
+  end,
+})
 vim.lsp.enable 'dhall_lsp_server'
 
 vim.api.nvim_create_autocmd('FileType', {
