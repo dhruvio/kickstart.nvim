@@ -907,6 +907,7 @@ do
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
+      astro = { 'prettier' },
       javascript = { 'prettier' },
       javascriptreact = { 'prettier' },
       typescript = { 'prettier' },
