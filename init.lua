@@ -907,6 +907,10 @@ do
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
+      javascript = { 'prettier' },
+      javascriptreact = { 'prettier' },
+      typescript = { 'prettier' },
+      typescriptreact = { 'prettier' },
       json = { 'prettier' },
       jsonc = { 'prettier' },
       lua = { 'stylua' },
